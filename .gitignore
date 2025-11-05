@@ -70,3 +70,4 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Optional: Yarn / pnpm lock files if you don’t want them in Git
 # yarn.lock
 # pnpm-lock.yaml
+.env

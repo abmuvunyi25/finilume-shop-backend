@@ -1,40 +1,44 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { Product } from '@prisma/client';
+// src/products/products.service.ts
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Product } from './entities/product.entity';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 
 @Injectable()
 export class ProductsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(Product)
+    private productsRepository: Repository<Product>,
+  ) {}
 
-  async create(data: {
-    name: string;
-    description?: string;
-    price: number;
-    imageUrl?: string;
-  }): Promise<Product> {
-    return this.prisma.product.create({ data });
+  async create(createProductDto: CreateProductDto): Promise<Product> {
+    const product = this.productsRepository.create(createProductDto);
+    return this.productsRepository.save(product);
   }
 
   async findAll(): Promise<Product[]> {
-    return this.prisma.product.findMany();
+    return this.productsRepository.find();
   }
 
-  async findOne(id: number): Promise<Product | null> {
-    return this.prisma.product.findUnique({ where: { id } });
+  async findOne(id: string): Promise<Product> {
+    const product = await this.productsRepository.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException(`Product with ID "${id}" not found`);
+    }
+    return product;
   }
 
-  async update(
-    id: number,
-    data: { name?: string; description?: string; price?: number; imageUrl?: string },
-  ): Promise<Product> {
-    return this.prisma.product.update({
-      where: { id },
-      data,
-    });
+  async update(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+    const product = await this.findOne(id); // Validates existence
+    Object.assign(product, updateProductDto);
+    return this.productsRepository.save(product);
   }
 
-  async remove(id: number): Promise<Product> {
-    return this.prisma.product.delete({ where: { id } });
+  async remove(id: string): Promise<Product> {
+    const product = await this.findOne(id);
+    await this.productsRepository.delete(id);
+    return product;
   }
 }
-
