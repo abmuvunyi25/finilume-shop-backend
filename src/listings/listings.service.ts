@@ -1,3 +1,4 @@
+// src/listings/listings.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,19 +11,20 @@ export class ListingsService {
     private listingsRepository: Repository<Listing>,
   ) {}
 
-  create(data: Partial<Listing>) {
+  async create(data: any) {
     const listing = this.listingsRepository.create(data);
     return this.listingsRepository.save(listing);
   }
 
-  findByProduct(productId: string) {
+  // FIXED: Use 'product' relation, not 'productId'
+  async findByProduct(productId: string) {
     return this.listingsRepository.find({
-      where: { productId },
-      relations: ['merchant'],
+      where: { product: { id: productId } }, // ← CORRECT
+      relations: ['merchant', 'product'],
     });
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.listingsRepository.findOne({
       where: { id },
       relations: ['product', 'merchant'],

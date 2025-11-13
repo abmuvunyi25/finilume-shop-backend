@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+// src/merchants/entities/merchant.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { Listing } from '../../listings/entities/listing.entity';
 
 @Entity('merchants')
 export class Merchant {
@@ -16,4 +18,9 @@ export class Merchant {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  // One merchant → many listings
+  @OneToMany(() => Listing, (listing) => listing.merchant)
+  listings: Listing[];
+  
 }

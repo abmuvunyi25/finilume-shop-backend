@@ -18,7 +18,7 @@ export class InitMarketplaceSchema1763061780269 implements MigrationInterface {
       true,
     );
 
-    // 2. Products (NO price!)
+    // 2. Products
     await queryRunner.createTable(
       new Table({
         name: 'products',
@@ -51,25 +51,19 @@ export class InitMarketplaceSchema1763061780269 implements MigrationInterface {
       true,
     );
 
-    await queryRunner.createForeignKey(
-      'listings',
-      new TableForeignKey({
-        columnNames: ['productId'],
-        referencedTableName: 'products',
-        referencedColumnNames: ['id'],
-        onDelete: 'CASCADE',
-      }),
-    );
+    await queryRunner.createForeignKey('listings', new TableForeignKey({
+      columnNames: ['productId'],
+      referencedTableName: 'products',
+      referencedColumnNames: ['id'],
+      onDelete: 'CASCADE',
+    }));
 
-    await queryRunner.createForeignKey(
-      'listings',
-      new TableForeignKey({
-        columnNames: ['merchantId'],
-        referencedTableName: 'merchants',
-        referencedColumnNames: ['id'],
-        onDelete: 'CASCADE',
-      }),
-    );
+    await queryRunner.createForeignKey('listings', new TableForeignKey({
+      columnNames: ['merchantId'],
+      referencedTableName: 'merchants',
+      referencedColumnNames: ['id'],
+      onDelete: 'CASCADE',
+    }));
 
     // 4. Cart
     await queryRunner.createTable(
@@ -85,15 +79,12 @@ export class InitMarketplaceSchema1763061780269 implements MigrationInterface {
       true,
     );
 
-    await queryRunner.createForeignKey(
-      'cart',
-      new TableForeignKey({
-        columnNames: ['listingId'],
-        referencedTableName: 'listings',
-        referencedColumnNames: ['id'],
-        onDelete: 'CASCADE',
-      }),
-    );
+    await queryRunner.createForeignKey('cart', new TableForeignKey({
+      columnNames: ['listingId'],
+      referencedTableName: 'listings',
+      referencedColumnNames: ['id'],
+      onDelete: 'CASCADE',
+    }));
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

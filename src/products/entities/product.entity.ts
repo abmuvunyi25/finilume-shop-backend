@@ -1,3 +1,4 @@
+// src/products/entities/product.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Listing } from '../../listings/entities/listing.entity';
 
@@ -21,7 +22,6 @@ export class Product {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // NEW: One product → many listings
-  @OneToMany(() => Listing, listing => listing.product)
+  @OneToMany(() => Listing, (listing) => listing.product, { cascade: true })
   listings: Listing[];
 }

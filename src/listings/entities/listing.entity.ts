@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
+// src/listings/entities/listing.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
 import { Merchant } from '../../merchants/entities/merchant.entity';
 
@@ -6,20 +7,6 @@ import { Merchant } from '../../merchants/entities/merchant.entity';
 export class Listing {
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @ManyToOne(() => Product)
-  @JoinColumn({ name: 'productId' })
-  product: Product;
-
-  @Column()
-  productId: string;
-
-  @ManyToOne(() => Merchant)
-  @JoinColumn({ name: 'merchantId' })
-  merchant: Merchant;
-
-  @Column()
-  merchantId: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
@@ -32,4 +19,18 @@ export class Listing {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  // Foreign key columns
+  @Column('uuid')
+  productId: string;
+
+  @Column('uuid')
+  merchantId: string;
+
+  // Relations
+  @ManyToOne(() => Product, (product) => product.listings, { onDelete: 'CASCADE' })
+  product: Product;
+
+  @ManyToOne(() => Merchant, (merchant) => merchant.listings, { onDelete: 'CASCADE' })
+  merchant: Merchant;
 }
