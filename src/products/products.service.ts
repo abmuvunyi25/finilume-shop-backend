@@ -13,11 +13,14 @@ export class ProductsService {
     private productsRepository: Repository<Product>,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const product = this.productsRepository.create(createProductDto);
+  // async create(createProductDto: CreateProductDto): Promise<Product> {
+  //   const product = this.productsRepository.create(createProductDto);
+  //   return this.productsRepository.save(product);
+  // }
+  async create(data: CreateProductDto) {
+    const product = this.productsRepository.create(data);
     return this.productsRepository.save(product);
   }
-
   async findAll(): Promise<Product[]> {
     return this.productsRepository.find();
   }
