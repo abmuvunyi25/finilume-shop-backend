@@ -16,7 +16,7 @@ export class CheckoutService {
 
   async checkout() {
     const cartItems = await this.cartRepository.find({
-      relations: ['product'],
+      relations: ['listing', 'listing.product', 'listing.merchant'],
     });
 
     if (cartItems.length === 0) {
@@ -24,22 +24,40 @@ export class CheckoutService {
     }
 
     const items = cartItems.map(item => ({
-      productId: item.product.id,
-      name: item.product.name,
-      price: parseFloat(item.product.price as any),
+      listingId: item.listing.id,
+      productId: item.listing.product.id,
+      name: item.listing.product.name,
+      price: parseFloat(item.listing.price as any),
       quantity: item.quantity,
+      merchantId: item.listing.merchant.id,
+      merchantName: item.listing.merchant.name,
     }));
+
+    const itemsByMerchant = items.reduce((acc, item) => {
+      const key = item.merchantName;
+      if (!acc[key]) {
+        acc[key] = { items: [], subtotal: 0 };
+      }
+      acc[key].items.push({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+      });
+      acc[key].subtotal += item.price * item.quantity;
+      return acc;
+    }, {} as Record<string, { items: any[]; subtotal: number }>);
 
     const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    const order = this.orderRepository.create({
-      items,
-      total,
-    });
-
+    const order = this.orderRepository.create({ items, total });
     await this.orderRepository.save(order);
     await this.cartRepository.clear();
 
-    return { orderId: order.id, total, items };
+    return {
+      orderId: order.id,
+      total,
+      currency: 'RWF',
+      itemsByMerchant,
+    };
   }
 }

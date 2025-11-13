@@ -6,9 +6,10 @@ import { CartService } from './cart.service';
 export class CartController {
   constructor(private cartService: CartService) {}
 
+  // CORRECT: Use listingId, not productId
   @Post()
-  add(@Body('productId') productId: string, @Body('quantity') quantity?: number) {
-    return this.cartService.addToCart(productId, quantity);
+  add(@Body('listingId') listingId: string, @Body('quantity') quantity?: number) {
+    return this.cartService.addToCart(listingId, quantity);
   }
 
   @Get()

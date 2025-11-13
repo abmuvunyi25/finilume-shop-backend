@@ -29,7 +29,9 @@ export class ProductsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.productsService.findOne(id);
+    const product = await this.productsService.findOne(id);
+    if (!product) throw new NotFoundException('Product not found');
+    return product; // listings auto-loaded via OneToMany + relations in service
   }
 
   @Put(':id')

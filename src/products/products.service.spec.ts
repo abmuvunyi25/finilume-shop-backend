@@ -1,3 +1,4 @@
+// src/products/products.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -22,10 +23,11 @@ export class ProductsService {
   }
 
   async findOne(id: string) {
-    const product = await this.productsRepository.findOne({ where: { id } });
-    if (!product) {
-      throw new NotFoundException(`Product with ID ${id} not found`);
-    }
+    const product = await this.productsRepository.findOne({
+      where: { id },
+      relations: ['listings', 'listings.merchant'], // Load all offers
+    });
+    if (!product) throw new NotFoundException('Product not found');
     return product;
   }
 

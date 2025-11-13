@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Listing } from '../../listings/entities/listing.entity';
 
 @Entity('products')
 export class Product {
@@ -11,16 +12,6 @@ export class Product {
   @Column('text')
   description: string;
 
-  @Column('decimal', {
-    precision: 10,
-    scale: 2,
-    transformer: {
-      to: (value: number) => value,
-      from: (value: string) => parseFloat(value),
-    },
-  })
-  price: number;
-
   @Column()
   imageUrl: string;
 
@@ -29,4 +20,8 @@ export class Product {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // NEW: One product → many listings
+  @OneToMany(() => Listing, listing => listing.product)
+  listings: Listing[];
 }
