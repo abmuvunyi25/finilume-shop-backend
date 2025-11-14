@@ -12,6 +12,4 @@ export class CreateProductDto {
   @IsUrl()
   @IsNotEmpty()
   imageUrl: string;
-
-  // NO PRICE — it's in listings!
 }

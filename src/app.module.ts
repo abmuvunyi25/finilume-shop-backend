@@ -15,15 +15,15 @@ config();
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false },
-      autoLoadEntities: true,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: false,
+      ssl: { rejectUnauthorized: false },
     }),
     ProductsModule,
+    MerchantsModule,
+    ListingsModule,
     CartModule,
     CheckoutModule,
-    MerchantsModule, 
-    ListingsModule,
   ],
 })
 export class AppModule {}

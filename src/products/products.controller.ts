@@ -1,4 +1,3 @@
-// src/products/products.controller.ts
 import {
   Controller,
   Get,
@@ -26,13 +25,10 @@ export class ProductsController {
   findAll() {
     return this.productsService.findAll();
   }
-  
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const product = await this.productsService.findOne(id);
-    if (!product) throw new NotFoundException('Product not found');
-    return product; // listings auto-loaded via OneToMany + relations in service
+    return this.productsService.findOne(id);
   }
 
   @Put(':id')

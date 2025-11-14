@@ -1,4 +1,3 @@
-// src/products/entities/product.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Listing } from '../../listings/entities/listing.entity';
 
