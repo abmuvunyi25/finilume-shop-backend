@@ -1,5 +1,4 @@
-// src/listings/listings.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Listing } from './entities/listing.entity';
@@ -16,11 +15,16 @@ export class ListingsService {
     return this.listingsRepository.save(listing);
   }
 
-  // FIXED: Use 'product' relation, not 'productId'
+  async findAll() {
+    return this.listingsRepository.find({
+      relations: ['merchant', 'product'],
+    });  // FIXED: Use listingsRepository instead of prisma
+  }
+
   async findByProduct(productId: string) {
     return this.listingsRepository.find({
-      where: { product: { id: productId } }, // ← CORRECT
-      relations: ['merchant', 'product'],
+      where: { product: { id: productId } },
+      relations: ['merchant'],
     });
   }
 
