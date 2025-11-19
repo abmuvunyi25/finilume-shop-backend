@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "NodeNext",
     "target": "es2017",
     "moduleResolution": "nodenext",
     "resolvePackageJsonExports": true,
