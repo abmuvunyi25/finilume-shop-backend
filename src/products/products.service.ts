@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { QueryProductDto } from './dto/query-product.dto';
 
 @Injectable()
 export class ProductsService {
@@ -17,8 +18,32 @@ export class ProductsService {
     return this.productsRepository.save(product);
   }
 
-  findAll() {
-    return this.productsRepository.find({ relations: ['listings'] });
+  async findAll(query: QueryProductDto) {
+    const { q, category, page, limit } = query;
+    const where: any = {};
+
+    if (q) {
+      where.name = ILike(`%${q}%`);
+    }
+    if (category) {
+      where.category = category;
+    }
+
+    const [items, total] = await this.productsRepository.findAndCount({
+      where,
+      relations: ['listings', 'listings.merchant'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      items,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findOne(id: string): Promise<Product> {

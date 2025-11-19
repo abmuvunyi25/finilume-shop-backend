@@ -16,6 +16,9 @@ export class Cart {
   @Column('int', { default: 1 })
   quantity: number;
 
+  @Column({ nullable: false })
+  sessionId: string;   // ✅ Add this
+
   @CreateDateColumn()
   createdAt: Date;
 }

@@ -73,6 +73,7 @@ export class InitMarketplaceSchema1763061780269 implements MigrationInterface {
           { name: 'id', type: 'uuid', isPrimary: true, isGenerated: true, generationStrategy: 'uuid' },
           { name: 'listingId', type: 'uuid' },
           { name: 'quantity', type: 'int', default: 1 },
+          { name: 'sessionId', type: 'uuid' }, // ✅ added
           { name: 'createdAt', type: 'timestamp', default: 'now()' },
         ],
       }),
@@ -85,9 +86,72 @@ export class InitMarketplaceSchema1763061780269 implements MigrationInterface {
       referencedColumnNames: ['id'],
       onDelete: 'CASCADE',
     }));
+
+    // 5. Orders
+    await queryRunner.createTable(
+      new Table({
+        name: 'orders',
+        columns: [
+          { name: 'id', type: 'uuid', isPrimary: true, isGenerated: true, generationStrategy: 'uuid' },
+          { name: 'sessionId', type: 'uuid' },
+          { name: 'customerName', type: 'varchar', isNullable: true },
+          { name: 'customerPhone', type: 'varchar', isNullable: true },
+          { name: 'customerEmail', type: 'varchar', isNullable: true },
+          { name: 'shippingAddress', type: 'varchar', isNullable: true },
+          { name: 'totalAmount', type: 'decimal', precision: 10, scale: 2 },
+          { name: 'currency', type: 'varchar', default: "'RWF'" },
+          { name: 'status', type: 'varchar', default: "'PENDING'" },
+          { name: 'createdAt', type: 'timestamp', default: 'now()' },
+          { name: 'updatedAt', type: 'timestamp', default: 'now()' },
+        ],
+      }),
+      true,
+    );
+
+    // 6. Order Items
+    await queryRunner.createTable(
+      new Table({
+        name: 'order_items',
+        columns: [
+          { name: 'id', type: 'uuid', isPrimary: true, isGenerated: true, generationStrategy: 'uuid' },
+          { name: 'orderId', type: 'uuid' },
+          { name: 'productId', type: 'uuid' },
+          { name: 'listingId', type: 'uuid', isNullable: true },
+          { name: 'title', type: 'varchar' },
+          { name: 'imageUrl', type: 'varchar', isNullable: true },
+          { name: 'quantity', type: 'int' },
+          { name: 'unitPrice', type: 'decimal', precision: 10, scale: 2 },
+          { name: 'currency', type: 'varchar', default: "'RWF'" },
+        ],
+      }),
+      true,
+    );
+
+    await queryRunner.createForeignKey('order_items', new TableForeignKey({
+      columnNames: ['orderId'],
+      referencedTableName: 'orders',
+      referencedColumnNames: ['id'],
+      onDelete: 'CASCADE',
+    }));
+
+    await queryRunner.createForeignKey('order_items', new TableForeignKey({
+      columnNames: ['productId'],
+      referencedTableName: 'products',
+      referencedColumnNames: ['id'],
+      onDelete: 'CASCADE',
+    }));
+
+    await queryRunner.createForeignKey('order_items', new TableForeignKey({
+      columnNames: ['listingId'],
+      referencedTableName: 'listings',
+      referencedColumnNames: ['id'],
+      onDelete: 'SET NULL',
+    }));
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropTable('order_items');
+    await queryRunner.dropTable('orders');
     await queryRunner.dropTable('cart');
     await queryRunner.dropTable('listings');
     await queryRunner.dropTable('products');

@@ -1,29 +1,39 @@
-// src/cart/cart.controller.ts
-import { Controller, Post, Get, Delete, Body, Param } from '@nestjs/common';
+// cart.controller.ts
+import { Controller, Post, Get, Delete, Patch, Body, Param, Query } from '@nestjs/common';
 import { CartService } from './cart.service';
+import { AddCartItemDto } from './dto/add-cart-item.dto';
 
 @Controller('cart')
 export class CartController {
-  constructor(private cartService: CartService) {}
+  constructor(private readonly cartService: CartService) {}
 
-  // CORRECT: Use listingId, not productId
-  @Post()
-  add(@Body('listingId') listingId: string, @Body('quantity') quantity?: number) {
-    return this.cartService.addToCart(listingId, quantity);
+  @Post('start')
+  start() {
+    return this.cartService.startSession();
+  }
+
+  @Post('items')
+  add(@Body() dto: AddCartItemDto, @Query('sessionId') sessionId: string) {
+    return this.cartService.addToCart(sessionId, dto);
   }
 
   @Get()
-  getCart() {
-    return this.cartService.findAll();
+  getCart(@Query('sessionId') sessionId: string) {
+    return this.cartService.findAll(sessionId);
   }
 
-  @Delete(':id')
+  @Patch('items/:id')
+  update(@Param('id') id: string, @Body('quantity') quantity: number) {
+    return this.cartService.updateQuantity(id, quantity);
+  }
+
+  @Delete('items/:id')
   remove(@Param('id') id: string) {
     return this.cartService.remove(id);
   }
 
   @Delete()
-  clear() {
-    return this.cartService.clear();
+  clear(@Query('sessionId') sessionId: string) {
+    return this.cartService.clear(sessionId);
   }
 }
