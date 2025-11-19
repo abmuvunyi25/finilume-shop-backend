@@ -9,11 +9,14 @@ import { MerchantsModule } from './merchants/merchants.module';
 import { ListingsModule } from './listings/listings.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { AppDataSource } from './data-source';
 
 config();
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot(AppDataSource.options),
+    CheckoutModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), // ✅ serve /public folder
     }),
