@@ -7,11 +7,16 @@ import { CheckoutModule } from './checkout/checkout.module';
 import { config } from 'dotenv';
 import { MerchantsModule } from './merchants/merchants.module';
 import { ListingsModule } from './listings/listings.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 config();
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'), // ✅ serve /public folder
+    }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
@@ -27,3 +32,4 @@ config();
   ],
 })
 export class AppModule {}
+
